@@ -26,7 +26,7 @@ const App: React.FC = () => {
           const params = new URLSearchParams();
           if (category) params.append('category', category);
           if (date) params.append('date', date);
-          const response = await axios.get('http://localhost:3000/expenses', { params });
+          const response = await axios.get('https://expense-tracker-backend-li0p.onrender.com/expenses', { params });
           setExpenses(response.data);
       } catch (error) {
           console.error('Error fetching expenses:', error);
@@ -39,7 +39,7 @@ const App: React.FC = () => {
           return;
       }
       try {
-          const response = await axios.get('http://localhost:3000/expenses/total', {
+          const response = await axios.get('https://expense-tracker-backend-li0p.onrender.com/expenses/total', {
               params: { start: startDate, end: endDate }
           });
           setTotal(response.data.total);
@@ -78,7 +78,7 @@ const App: React.FC = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3000/expenses', expense);
+            const response = await axios.post('https://expense-tracker-backend-li0p.onrender.com/expenses', expense);
             console.log('Expense added:', response.data);
             // Reset form
             setExpense({ amount: 0, category: '', date: '', description: '' });
