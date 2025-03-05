@@ -12,6 +12,10 @@ const App: React.FC = () => {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [filterCategory, setFilterCategory] = useState<string>('');
     const [filterDate, setFilterDate] = useState<string>('');
+    const [startDate, setStartDate] = useState<string>('');
+    const [endDate, setEndDate] = useState<string>('');
+    const [total, setTotal] = useState<number | null>(null);
+    
 
     useEffect(() => {
       fetchExpenses();
@@ -29,6 +33,22 @@ const App: React.FC = () => {
       }
     };
 
+    const fetchTotal = async () => {
+      if (!startDate || !endDate) {
+          alert('Please select both start and end dates.');
+          return;
+      }
+      try {
+          const response = await axios.get('http://localhost:3000/expenses/total', {
+              params: { start: startDate, end: endDate }
+          });
+          setTotal(response.data.total);
+      } catch (error) {
+          console.error('Error fetching total:', error);
+          setTotal(null);
+      }
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setExpense(prev => ({
@@ -41,6 +61,12 @@ const App: React.FC = () => {
       const { name, value } = e.target;
       if (name === 'filterCategory') setFilterCategory(value);
       if (name === 'filterDate') setFilterDate(value);
+    };
+
+    const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      if (name === 'startDate') setStartDate(value);
+      if (name === 'endDate') setEndDate(value);
     };
 
     const handleSubmit = async (e: FormEvent) => {
@@ -298,7 +324,90 @@ const App: React.FC = () => {
                           Clear Filters
                       </button>
                     </div>
+               </div>
+
+              {/* Total Expenses Section */}
+              <div style={{
+                    backgroundColor: '#ffffff',
+                    padding: '20px',
+                    borderRadius: '10px',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                    marginBottom: '40px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '15px',
+                    flexWrap: 'wrap'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1', minWidth: '250px' }}>
+                        <label style={{ fontWeight: '600', color: '#34495e', whiteSpace: 'nowrap' }}>
+                            Start Date:
+                        </label>
+                        <input
+                            type="date"
+                            name="startDate"
+                            value={startDate}
+                            onChange={handleTotalChange}
+                            style={{
+                                padding: '10px',
+                                border: '1px solid #bdc3c7',
+                                borderRadius: '6px',
+                                fontSize: '16px',
+                                outline: 'none',
+                                flex: '1',
+                                transition: 'border-color 0.3s',
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#3498db'}
+                            onBlur={(e) => e.target.style.borderColor = '#bdc3c7'}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1', minWidth: '250px' }}>
+                        <label style={{ fontWeight: '600', color: '#34495e', whiteSpace: 'nowrap' }}>
+                            End Date:
+                        </label>
+                        <input
+                            type="date"
+                            name="endDate"
+                            value={endDate}
+                            onChange={handleTotalChange}
+                            style={{
+                                padding: '10px',
+                                border: '1px solid #bdc3c7',
+                                borderRadius: '6px',
+                                fontSize: '16px',
+                                outline: 'none',
+                                flex: '1',
+                                transition: 'border-color 0.3s',
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#3498db'}
+                            onBlur={(e) => e.target.style.borderColor = '#bdc3c7'}
+                        />
+                    </div>
+                    <button
+                        onClick={fetchTotal}
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#f1c40f',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '16px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.3s',
+                        }}
+                        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#e67e22')}
+                        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#f1c40f')}
+                    >
+                        Calculate Total
+                    </button>
                 </div>
+                {total !== null && (
+                    <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                        <h3 style={{ color: '#2c3e50' }}>
+                            Total Expenses: ${total.toFixed(2)}
+                        </h3>
+                    </div>
+                )}
 
               {/* Expense List */}
               <h2 style={{ color: '#2c3e50', marginBottom: '20px' }}>Your Expenses</h2>
