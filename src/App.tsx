@@ -49,6 +49,12 @@ const App: React.FC = () => {
       }
     };
 
+    const clearTotal = () => {
+      setStartDate('');
+      setEndDate('');
+      setTotal(null);
+  };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setExpense(prev => ({
@@ -77,6 +83,7 @@ const App: React.FC = () => {
             // Reset form
             setExpense({ amount: 0, category: '', date: '', description: '' });
             fetchExpenses();
+            if (startDate && endDate) fetchTotal();
         } catch (error) {
             console.error('Error adding expense:', error);
         }
@@ -382,24 +389,44 @@ const App: React.FC = () => {
                             onBlur={(e) => e.target.style.borderColor = '#bdc3c7'}
                         />
                     </div>
-                    <button
-                        onClick={fetchTotal}
-                        style={{
-                            padding: '10px 20px',
-                            backgroundColor: '#f1c40f',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '6px',
-                            fontSize: '16px',
-                            fontWeight: '600',
-                            cursor: 'pointer',
-                            transition: 'background-color 0.3s',
-                        }}
-                        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#e67e22')}
-                        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#f1c40f')}
-                    >
-                        Calculate Total
-                    </button>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                      <button
+                          onClick={fetchTotal}
+                          style={{
+                              padding: '10px 20px',
+                              backgroundColor: '#f1c40f',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '6px',
+                              fontSize: '16px',
+                              fontWeight: '600',
+                              cursor: 'pointer',
+                              transition: 'background-color 0.3s',
+                          }}
+                          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#e67e22')}
+                          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#f1c40f')}
+                      >
+                          Calculate Total
+                      </button>
+                      <button
+                            onClick={clearTotal}
+                            style={{
+                                padding: '10px 20px',
+                                backgroundColor: '#e74c3c',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '6px',
+                                fontSize: '16px',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                transition: 'background-color 0.3s',
+                            }}
+                            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#c0392b')}
+                            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#e74c3c')}
+                        >
+                            Clear Total
+                        </button>
+                    </div>  
                 </div>
                 {total !== null && (
                     <div style={{ textAlign: 'center', marginBottom: '40px' }}>
