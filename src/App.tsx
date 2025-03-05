@@ -1,35 +1,82 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, FormEvent } from 'react';
+import axios from 'axios';
+import { Expense } from './types';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+    const [expense, setExpense] = useState<Expense>({
+        amount: 0,
+        category: '',
+        date: '',
+        description: ''
+    });
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setExpense(prev => ({
+            ...prev,
+            [name]: name === 'amount' ? Number(value) : value
+        }));
+    };
 
-export default App
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:3000/expenses', expense);
+            console.log('Expense added:', response.data);
+            // Reset form
+            setExpense({ amount: 0, category: '', date: '', description: '' });
+        } catch (error) {
+            console.error('Error adding expense:', error);
+        }
+    };
+
+    return (
+        <div>
+            <h1>Expense Tracker</h1>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <label>Amount:</label>
+                    <input
+                        type="number"
+                        name="amount"
+                        value={expense.amount}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Category:</label>
+                    <input
+                        type="text"
+                        name="category"
+                        value={expense.category}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Date:</label>
+                    <input
+                        type="date"
+                        name="date"
+                        value={expense.date}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Description:</label>
+                    <input
+                        type="text"
+                        name="description"
+                        value={expense.description}
+                        onChange={handleChange}
+                    />
+                </div>
+                <button type="submit">Add Expense</button>
+            </form>
+        </div>
+    );
+};
+
+export default App;
